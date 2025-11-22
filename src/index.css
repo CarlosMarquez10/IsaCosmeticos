@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-gradient-to-br from-brand-100 via-white to-brand-200 text-gray-800;
+}
+
+.container-max {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-lg bg-brand-600 text-white px-4 py-2 font-medium shadow hover:bg-brand-700 transition-colors;
+}
+
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-lg bg-gray-900 text-white px-4 py-2 font-medium shadow hover:bg-gray-800 transition-colors;
+}
+
+.card {
+  @apply bg-white rounded-2xl shadow-sm ring-1 ring-gray-200 hover:shadow-lg transition-shadow;
+}
+
+.heading-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-700 to-brand-400;
+}
+
+.hero-fade-bottom {
+  position: relative;
+}
+.hero-fade-bottom::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(251,106,160,0.32) 60%, rgba(251,106,160,0.5));
+  pointer-events: none;
+}
+
+.img-soft-edges {
+  -webkit-mask-image: radial-gradient(closest-side, rgba(0,0,0,1) 88%, rgba(0,0,0,0) 100%);
+  mask-image: radial-gradient(closest-side, rgba(0,0,0,1) 88%, rgba(0,0,0,0) 100%);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.img-soft-edges-md {
+  -webkit-mask-image: radial-gradient(closest-side, rgba(0,0,0,1) 95%, rgba(0,0,0,0) 100%);
+  mask-image: radial-gradient(closest-side, rgba(0,0,0,1) 95%, rgba(0,0,0,0) 100%);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.scrollbar-rose {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(233,30,99,0.8) rgba(251,106,160,0.15);
+}
+.scrollbar-rose::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.scrollbar-rose::-webkit-scrollbar-track {
+  background: rgba(251,106,160,0.15);
+  border-radius: 9999px;
+}
+.scrollbar-rose::-webkit-scrollbar-thumb {
+  background: rgba(233,30,99,0.75);
+  border-radius: 9999px;
+  border: 2px solid rgba(255,255,255,0.6);
+}
+.scrollbar-rose::-webkit-scrollbar-thumb:hover {
+  background: rgba(233,30,99,0.9);
+}
