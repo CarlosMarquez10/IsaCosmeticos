@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { createProduct, deleteProduct, listProducts, updateProduct, getProduct, removeProductImage, setMainProductImage, listCategories, createCategory, deleteCategory } from '../services/api'
-import { Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Trash2, Loader2 } from 'lucide-react'
 
 export default function AdminDashboard() {
   const token = (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('isa_admin_token')) || (typeof localStorage !== 'undefined' && localStorage.getItem('isa_admin_token'))
@@ -10,6 +10,9 @@ export default function AdminDashboard() {
   const [editing, setEditing] = useState(null)
   const [categories, setCategories] = useState([])
   const [newCat, setNewCat] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [errors, setErrors] = useState({})
+  const [submitError, setSubmitError] = useState('')
 
   const load = async () => {
     const data = await listProducts()
@@ -24,21 +27,31 @@ useEffect(() => { load(); loadCategories() }, [])
 
   const submit = async e => {
     e.preventDefault()
-    const payload = { ...form }
-    const arr = files.filter(Boolean).slice(0, 5)
-    if (arr.length) {
-      payload.imagen = arr[0]
-      payload.imagenes = arr
+    setSubmitError('')
+    const ok = validateForm()
+    if (!ok) return
+    setSaving(true)
+    try {
+      const payload = { ...form }
+      const arr = files.filter(Boolean).slice(0, 5)
+      if (arr.length) {
+        payload.imagen = arr[0]
+        payload.imagenes = arr
+      }
+      if (editing) {
+        await updateProduct(token, editing.id, payload)
+      } else {
+        await createProduct(token, payload)
+      }
+      setForm({ nombre: '', descripcion: '', categoria: '', precio: '', stock: '' })
+      setFiles([null, null, null, null, null])
+      setEditing(null)
+      await load()
+    } catch (e) {
+      setSubmitError(e?.message || 'Error al guardar')
+    } finally {
+      setSaving(false)
     }
-    if (editing) {
-      await updateProduct(token, editing.id, payload)
-    } else {
-      await createProduct(token, payload)
-    }
-    setForm({ nombre: '', descripcion: '', categoria: '', precio: '', stock: '' })
-    setFiles([null, null, null, null, null])
-    setEditing(null)
-    await load()
   }
 
   const edit = async item => {
@@ -69,13 +82,17 @@ useEffect(() => { load(); loadCategories() }, [])
       <h2 className="text-2xl font-bold heading-gradient">Panel Admin</h2>
       <form onSubmit={submit} className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl">
         <input placeholder="Nombre" value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70 focus:outline-none focus:ring-2 focus:ring-brand-300" />
+        {errors.nombre && <div className="text-xs text-red-600">{errors.nombre}</div>}
         <select value={form.categoria} onChange={e => setForm(f => ({ ...f, categoria: e.target.value }))} className="rounded-lg border border-gray-300 bg-white/70 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-300">
           <option value="">Selecciona categoría</option>
           {categories.map(c => <option key={c.id} value={c.nombre}>{c.nombre}</option>)}
         </select>
+        {errors.categoria && <div className="text-xs text-red-600">{errors.categoria}</div>}
         <textarea placeholder="Descripción" value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))} className="md:col-span-2 rounded-lg border border-gray-300 px-3 py-2 bg-white/70 focus:outline-none focus:ring-2 focus:ring-brand-300" />
-        <input placeholder="Precio" type="number" step="0.01" value={form.precio} onChange={e => setForm(f => ({ ...f, precio: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70 focus:outline-none focus:ring-2 focus:ring-brand-300" />
-        <input placeholder="Stock" type="number" value={form.stock} onChange={e => setForm(f => ({ ...f, stock: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70 focus:outline-none focus:ring-2 focus:ring-brand-300" />
+        <input placeholder="Precio" type="number" step="0.01" min="0.01" value={form.precio} onChange={e => setForm(f => ({ ...f, precio: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70 focus:outline-none focus:ring-2 focus:ring-brand-300" />
+        {errors.precio && <div className="text-xs text-red-600">{errors.precio}</div>}
+        <input placeholder="Stock" type="number" min="0" value={form.stock} onChange={e => setForm(f => ({ ...f, stock: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70 focus:outline-none focus:ring-2 focus:ring-brand-300" />
+        {errors.stock && <div className="text-xs text-red-600">{errors.stock}</div>}
         <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <input type="file" onChange={e => setFiles(prev => { const n=[...prev]; n[0]=e.target.files[0]||null; return n })} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70" placeholder="Imagen 1" />
           <input type="file" onChange={e => setFiles(prev => { const n=[...prev]; n[1]=e.target.files[0]||null; return n })} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70" placeholder="Imagen 2" />
@@ -99,7 +116,8 @@ useEffect(() => { load(); loadCategories() }, [])
             </div>
           </div>
         )}
-        <button type="submit" className="md:col-span-2 btn-primary">{editing ? 'Guardar cambios' : 'Crear producto'}</button>
+        {submitError && <div className="md:col-span-2 text-sm text-red-600">{submitError}</div>}
+        <button type="submit" disabled={saving} className="md:col-span-2 btn-primary inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">{saving ? (<><Loader2 className="w-4 h-4 animate-spin" /> {editing ? 'Guardando...' : 'Creando...'}</>) : (editing ? 'Guardar cambios' : 'Crear producto')}</button>
       </form>
 
       <div className="mt-8">
@@ -135,3 +153,14 @@ useEffect(() => { load(); loadCategories() }, [])
     </div>
   )
 }
+  const validateForm = () => {
+    const errs = {}
+    if (!String(form.nombre || '').trim()) errs.nombre = 'Nombre requerido'
+    if (!String(form.categoria || '').trim()) errs.categoria = 'Categoría requerida'
+    const precioN = Number(form.precio)
+    if (!precioN || precioN <= 0) errs.precio = 'Precio debe ser mayor a 0'
+    const stockN = Number(form.stock)
+    if (Number.isNaN(stockN) || stockN < 0) errs.stock = 'Stock debe ser 0 o más'
+    setErrors(errs)
+    return Object.keys(errs).length === 0
+  }

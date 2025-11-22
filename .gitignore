@@ -1,0 +1,12 @@
+.env
+.env.*
+**/.env
+**/.env.*
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+Frontend/.firebase/
+**/.firebase/
+Backend/uploads/*
+!Backend/uploads/.gitkeep
