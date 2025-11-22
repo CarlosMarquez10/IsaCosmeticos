@@ -13,6 +13,17 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState({})
   const [submitError, setSubmitError] = useState('')
+  const validateForm = () => {
+    const errs = {}
+    if (!String(form.nombre || '').trim()) errs.nombre = 'Nombre requerido'
+    if (!String(form.categoria || '').trim()) errs.categoria = 'Categoría requerida'
+    const precioN = Number(form.precio)
+    if (!precioN || precioN <= 0) errs.precio = 'Precio debe ser mayor a 0'
+    const stockN = Number(form.stock)
+    if (Number.isNaN(stockN) || stockN < 0) errs.stock = 'Stock debe ser 0 o más'
+    setErrors(errs)
+    return Object.keys(errs).length === 0
+  }
 
   const load = async () => {
     const data = await listProducts()
@@ -153,14 +164,3 @@ useEffect(() => { load(); loadCategories() }, [])
     </div>
   )
 }
-  const validateForm = () => {
-    const errs = {}
-    if (!String(form.nombre || '').trim()) errs.nombre = 'Nombre requerido'
-    if (!String(form.categoria || '').trim()) errs.categoria = 'Categoría requerida'
-    const precioN = Number(form.precio)
-    if (!precioN || precioN <= 0) errs.precio = 'Precio debe ser mayor a 0'
-    const stockN = Number(form.stock)
-    if (Number.isNaN(stockN) || stockN < 0) errs.stock = 'Stock debe ser 0 o más'
-    setErrors(errs)
-    return Object.keys(errs).length === 0
-  }
