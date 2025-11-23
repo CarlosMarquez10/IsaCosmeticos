@@ -28,7 +28,7 @@ export default function CartDrawer({ open, onClose }) {
   return (
     <div className={`fixed inset-0 z-50 ${open ? '' : 'pointer-events-none'}`} aria-hidden={!open}>
       <div className={`absolute inset-0 bg-black/30 backdrop-blur-sm transition-opacity ${open ? 'opacity-100' : 'opacity-0'}`} onClick={onClose}></div>
-      <div className={`absolute right-0 top-0 h-full w-full sm:w-[440px] bg-white shadow-2xl ring-1 ring-gray-200 rounded-l-2xl transform transition-transform ${open ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`absolute right-3 top-3 bottom-3 w-[92%] sm:w-[440px] bg-white shadow-2xl ring-1 ring-gray-200 rounded-2xl transform transition-transform ${open ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex items-center justify-between px-6 py-4 border-b border-brand-200 bg-gradient-to-r from-brand-200/80 via-brand-100/60 to-[#FAF7F2] flex-shrink-0 text-brand-800">
           <div className="font-semibold">Tu carrito</div>
           <button onClick={onClose} className="p-2 rounded-lg hover:bg-brand-100 transition"><X className="w-5 h-5" /></button>

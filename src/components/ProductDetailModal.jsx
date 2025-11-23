@@ -24,6 +24,8 @@ export default function ProductDetailModal({ product, open, onClose }) {
     return arr.map(p => (p?.startsWith('http') ? p : `${base}${p}`))
   }, [info, base])
   const price = Number(info?.precio || info?.price || 0)
+  const discountPct = Number(info?.descuento_porcentaje || 0)
+  const finalPrice = discountPct > 0 ? (price * (100 - discountPct) / 100) : price
 
   const inc = () => setQty(q => Math.min(Number(info?.stock ?? 999), q + 1))
   const dec = () => setQty(q => Math.max(1, q - 1))
@@ -57,11 +59,25 @@ export default function ProductDetailModal({ product, open, onClose }) {
             )}
           </div>
           <div className="p-4 sm:p-6 space-y-4 bg-brand-50/40">
-            <div className="text-sm text-gray-500">{info?.categoria}</div>
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-gray-500">{info?.categoria}</div>
+              {discountPct > 0 && (
+                <div className="inline-flex items-center rounded-full bg-red-500 text-white text-xs px-2 py-0.5">-{discountPct}%</div>
+              )}
+            </div>
             {info?.stock !== undefined && (
               <div className="text-xs text-gray-600">Cantidad: {Number(info.stock)}</div>
             )}
-            <div className="text-2xl font-bold text-gray-900">$ {new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(price)}</div>
+            <div className="text-2xl font-bold text-gray-900">
+              {discountPct > 0 ? (
+                <div className="flex items-baseline gap-3">
+                  <span className="text-gray-500 line-through text-lg">$ {new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(price)}</span>
+                  <span>$ {new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(finalPrice)}</span>
+                </div>
+              ) : (
+                <span>$ {new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(price)}</span>
+              )}
+            </div>
             {info?.descripcion && <div className="text-gray-700 whitespace-pre-line text-sm leading-relaxed">{info.descripcion}</div>}
             <div className="flex items-center gap-2">
               <button onClick={dec} className="p-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition"><Minus className="w-4 h-4" /></button>

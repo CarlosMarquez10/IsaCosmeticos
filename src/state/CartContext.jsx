@@ -20,7 +20,9 @@ export function CartProvider({ children }) {
         return copy
       }
       const baseQty = Math.min(Number(product.stock ?? qty), Number(qty))
-      return [...prev, { id: product.id, name: product.nombre, price: product.precio, image: product.imagen_url, quantity: baseQty, stock: product.stock }]
+      const pct = Number(product?.descuento_porcentaje || 0)
+      const unitPrice = pct > 0 ? (Number(product.precio) * (100 - pct) / 100) : Number(product.precio)
+      return [...prev, { id: product.id, name: product.nombre, price: unitPrice, image: product.imagen_url, quantity: baseQty, stock: product.stock }]
     })
   }
 

@@ -5,7 +5,7 @@ import { Pencil, Trash2, Loader2 } from 'lucide-react'
 export default function AdminDashboard() {
   const token = (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('isa_admin_token')) || (typeof localStorage !== 'undefined' && localStorage.getItem('isa_admin_token'))
   const [items, setItems] = useState([])
-  const [form, setForm] = useState({ nombre: '', descripcion: '', categoria: '', precio: '', stock: '' })
+  const [form, setForm] = useState({ nombre: '', descripcion: '', categoria: '', precio: '', stock: '', descuento: 0 })
   const [files, setFiles] = useState([null, null, null, null, null])
   const [editing, setEditing] = useState(null)
   const [categories, setCategories] = useState([])
@@ -54,7 +54,7 @@ useEffect(() => { load(); loadCategories() }, [])
       } else {
         await createProduct(token, payload)
       }
-      setForm({ nombre: '', descripcion: '', categoria: '', precio: '', stock: '' })
+    setForm({ nombre: '', descripcion: '', categoria: '', precio: '', stock: '', descuento: 0 })
       setFiles([null, null, null, null, null])
       setEditing(null)
       await load()
@@ -68,7 +68,7 @@ useEffect(() => { load(); loadCategories() }, [])
   const edit = async item => {
     const data = await getProduct(item.id)
     setEditing(data)
-    setForm({ nombre: data.nombre, descripcion: data.descripcion, categoria: data.categoria, precio: data.precio, stock: data.stock })
+    setForm({ nombre: data.nombre, descripcion: data.descripcion, categoria: data.categoria, precio: data.precio, stock: data.stock, descuento: Number(data.descuento_porcentaje || 0) })
     setFiles([null, null, null, null, null])
   }
 
@@ -104,6 +104,7 @@ useEffect(() => { load(); loadCategories() }, [])
         {errors.precio && <div className="text-xs text-red-600">{errors.precio}</div>}
         <input placeholder="Stock" type="number" min="0" value={form.stock} onChange={e => setForm(f => ({ ...f, stock: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70 focus:outline-none focus:ring-2 focus:ring-brand-300" />
         {errors.stock && <div className="text-xs text-red-600">{errors.stock}</div>}
+        <input placeholder="Descuento (%)" type="number" min="0" max="100" value={form.descuento} onChange={e => setForm(f => ({ ...f, descuento: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70 focus:outline-none focus:ring-2 focus:ring-brand-300" />
         <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <input type="file" onChange={e => setFiles(prev => { const n=[...prev]; n[0]=e.target.files[0]||null; return n })} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70" placeholder="Imagen 1" />
           <input type="file" onChange={e => setFiles(prev => { const n=[...prev]; n[1]=e.target.files[0]||null; return n })} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70" placeholder="Imagen 2" />
@@ -153,7 +154,17 @@ useEffect(() => { load(); loadCategories() }, [])
           <div key={it.id} className="card p-4">
             <div className="font-semibold">{it.nombre}</div>
             <div className="text-sm text-gray-600">{it.categoria}</div>
-            <div className="mt-2 font-bold">$ {Number(it.precio).toFixed(2)}</div>
+            <div className="mt-2">
+              {Number(it.descuento_porcentaje || 0) > 0 ? (
+                <div className="flex items-baseline gap-2">
+                  <div className="text-gray-500 line-through text-sm">$ {Number(it.precio).toFixed(2)}</div>
+                  <div className="font-bold text-gray-900">$ {Number((Number(it.precio) * (100 - Number(it.descuento_porcentaje || 0)) / 100)).toFixed(2)}</div>
+                  <div className="text-xs text-green-700">-{Number(it.descuento_porcentaje)}%</div>
+                </div>
+              ) : (
+                <div className="font-bold text-gray-900">$ {Number(it.precio).toFixed(2)}</div>
+              )}
+            </div>
             <div className="flex gap-2 mt-3">
               <button onClick={() => edit(it)} className="px-3 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition inline-flex items-center gap-2"><Pencil className="w-4 h-4" /> Editar</button>
               <button onClick={() => remove(it.id)} className="px-3 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition inline-flex items-center gap-2"><Trash2 className="w-4 h-4" /> Eliminar</button>

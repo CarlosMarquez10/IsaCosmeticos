@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { listProducts, listCategories } from '../services/api'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
 
 export default function Products() {
@@ -11,6 +11,7 @@ export default function Products() {
   const [categoria, setCategoria] = useState('')
   const [categories, setCategories] = useState([])
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
 
   useEffect(() => {
     let mounted = true
@@ -28,6 +29,12 @@ export default function Products() {
     (!q || (p.nombre?.toLowerCase().includes(q.toLowerCase()) || p.descripcion?.toLowerCase().includes(q.toLowerCase()))) &&
     (!categoria || p.categoria === categoria)
   ))
+  const isGrouped = !categoria && !q
+  const byCat = new Map()
+  if (isGrouped) {
+    for (const p of filtered) { if (!byCat.has(p.categoria)) byCat.set(p.categoria, p) }
+  }
+  const display = isGrouped ? Array.from(byCat.values()) : filtered
 
   return (
     <div className="container-max py-10">
@@ -50,7 +57,14 @@ export default function Products() {
 
       {!loading && !error && (
         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-          {filtered.map(p => <ProductCard key={p.id} product={p} />)}
+          {display.map(p => (
+            <ProductCard
+              key={p.id}
+              product={p}
+              showViewAll={isGrouped}
+              onViewAll={() => navigate(`/productos?categoria=${encodeURIComponent(p.categoria)}`)}
+            />
+          ))}
         </div>
       )}
     </div>
