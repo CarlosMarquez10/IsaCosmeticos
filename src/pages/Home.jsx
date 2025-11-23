@@ -7,7 +7,8 @@ export default function Home() {
       <section className="container-max py-16 sm:py-24">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
           <div>
-            <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight heading-gradient">Belleza que inspira confianza</h1>
+            <h1 className="font-brand font-bold text-5xl sm:text-6xl heading-gradient drop-shadow-[0_2px_8px_rgba(233,30,99,0.35)]">ISA Cosméticos</h1>
+            <h3 className="mt-3 text-2xl sm:text-3xl font-semibold leading-tight heading-gradient">Belleza que inspira confianza</h3>
             <p className="mt-4 text-lg text-gray-700">Cosméticos y artículos de cuidado para cabello, uñas y piel. Descubre tu mejor versión.</p>
             <div className="mt-8 flex gap-4">
               <Link to="/productos" className="btn-primary">Ver productos</Link>

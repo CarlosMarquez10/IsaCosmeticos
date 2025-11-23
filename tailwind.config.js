@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        brand: ['"Dancing Script"', 'cursive']
+      },
       colors: {
         brand: {
           50: '#fff1f7',

@@ -12,7 +12,7 @@ export default function Header({ openCart, setOpenCart }) {
   return (
     <header className="sticky top-0 z-40 backdrop-blur bg-white/70 border-b border-gray-200">
       <div className="container-max flex items-center justify-between h-16">
-        <Link to="/" className="font-bold text-xl heading-gradient">ISA Cosméticos</Link>
+        <Link to="/" className="font-brand font-bold text-3xl sm:text-4xl heading-gradient drop-shadow-[0_2px_8px_rgba(233,30,99,0.35)]">ISA Cosméticos</Link>
         <nav className="hidden md:flex items-center gap-6">
           <NavLink to="/" className={({ isActive }) => `flex items-center gap-2 hover:text-brand-600 transition-colors ${isActive ? 'text-brand-600' : 'text-gray-700'}`}><Home className="w-4 h-4" /> Inicio</NavLink>
           <NavLink to="/productos" className={({ isActive }) => `flex items-center gap-2 hover:text-brand-600 transition-colors ${isActive ? 'text-brand-600' : 'text-gray-700'}`}><Package className="w-4 h-4" /> Productos</NavLink>

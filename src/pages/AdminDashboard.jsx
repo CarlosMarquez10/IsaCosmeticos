@@ -104,7 +104,11 @@ useEffect(() => { load(); loadCategories() }, [])
         {errors.precio && <div className="text-xs text-red-600">{errors.precio}</div>}
         <input placeholder="Stock" type="number" min="0" value={form.stock} onChange={e => setForm(f => ({ ...f, stock: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70 focus:outline-none focus:ring-2 focus:ring-brand-300" />
         {errors.stock && <div className="text-xs text-red-600">{errors.stock}</div>}
-        <input placeholder="Descuento (%)" type="number" min="0" max="100" value={form.descuento} onChange={e => setForm(f => ({ ...f, descuento: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70 focus:outline-none focus:ring-2 focus:ring-brand-300" />
+        <div className="flex flex-col gap-1">
+          <div className="text-xs text-gray-600">Descuento a aplicar (%)</div>
+          <input placeholder="Ej: 10 para 10%" type="number" min="0" max="100" value={form.descuento} onChange={e => setForm(f => ({ ...f, descuento: e.target.value }))} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70 focus:outline-none focus:ring-2 focus:ring-brand-300" />
+          <div className="text-[11px] text-gray-500">Ingresa un número entre 0 y 100</div>
+        </div>
         <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <input type="file" onChange={e => setFiles(prev => { const n=[...prev]; n[0]=e.target.files[0]||null; return n })} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70" placeholder="Imagen 1" />
           <input type="file" onChange={e => setFiles(prev => { const n=[...prev]; n[1]=e.target.files[0]||null; return n })} className="rounded-lg border border-gray-300 px-3 py-2 bg-white/70" placeholder="Imagen 2" />
